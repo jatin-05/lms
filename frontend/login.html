@@ -12,9 +12,18 @@
 
 <header class="app-header">
   <div class="header-inner">
-    <div class="app-brand">LMS Login</div>
-    <nav class="app-nav">
-      <a href="register.html">Register</a>
+    <div class="app-brand">LMS Portal</div>
+    <div class="search-container">
+      <input type="text" placeholder="Search courses..." class="search-input">
+      <button class="search-btn">🔍</button>
+    </div>
+    <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <nav class="app-nav" id="mobileNav">
+      <a href="register.html" class="btn">Register</a>
       <a href="index.php">Courses</a>
     </nav>
   </div>
@@ -28,14 +37,14 @@
     <form action="../backend/login.php" method="POST">
       <div class="form-group">
         <label for="email">Email</label>
-        <input id="email" type="email" name="email" placeholder="Email" required>
+        <input id="email" type="email" name="email" placeholder="Enter your email" required>
       </div>
       <div class="form-group">
         <label for="password">Password</label>
-        <input id="password" type="password" name="password" placeholder="Password" required>
+        <input id="password" type="password" name="password" placeholder="Enter your password" required>
       </div>
       <div class="form-actions">
-        <button class="btn" type="submit">Login</button>
+        <button class="btn" type="submit">Sign In</button>
       </div>
     </form>
 
@@ -44,6 +53,23 @@
 </section>
 </div>
 </div>
+
+<script>
+function toggleMobileMenu() {
+  const nav = document.getElementById('mobileNav');
+  nav.classList.toggle('active');
+}
+
+// Close mobile menu when clicking outside
+document.addEventListener('click', function(event) {
+  const nav = document.getElementById('mobileNav');
+  const toggle = document.querySelector('.mobile-menu-toggle');
+  
+  if (!nav.contains(event.target) && !toggle.contains(event.target)) {
+    nav.classList.remove('active');
+  }
+});
+</script>
 
 </body>
 </html>

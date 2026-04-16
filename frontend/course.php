@@ -61,10 +61,23 @@ $quiz_result = $conn->query($quiz_sql);
 
 <header class="app-header">
   <div class="header-inner">
-    <div class="app-brand">LMS Course</div>
-    <nav class="app-nav">
+    <div class="app-brand">LMS Portal</div>
+    <div class="search-container">
+      <input type="text" placeholder="Search courses..." class="search-input">
+      <button class="search-btn">🔍</button>
+    </div>
+    <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <nav class="app-nav" id="mobileNav">
       <a href="index.php">Courses</a>
-      <a href="login.html">Login</a>
+      <?php if (isset($_SESSION['user_id'])) { ?>
+        <a href="../backend/logout.php" class="btn btn-secondary">Logout</a>
+      <?php } else { ?>
+        <a href="login.html" class="btn">Login</a>
+      <?php } ?>
     </nav>
   </div>
 </header>
@@ -130,6 +143,23 @@ $quiz_result = $conn->query($quiz_sql);
 </div>
 </div>
 </div>
+
+<script>
+function toggleMobileMenu() {
+  const nav = document.getElementById('mobileNav');
+  nav.classList.toggle('active');
+}
+
+// Close mobile menu when clicking outside
+document.addEventListener('click', function(event) {
+  const nav = document.getElementById('mobileNav');
+  const toggle = document.querySelector('.mobile-menu-toggle');
+  
+  if (!nav.contains(event.target) && !toggle.contains(event.target)) {
+    nav.classList.remove('active');
+  }
+});
+</script>
 
 </body>
 </html>

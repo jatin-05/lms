@@ -27,10 +27,24 @@ $lesson = $result->fetch_assoc();
 <div class="container">
 <header class="app-header">
   <div class="header-inner">
-    <div class="app-brand">Lesson</div>
-    <nav class="app-nav">
+    <div class="app-brand">LMS Portal</div>
+    <div class="search-container">
+      <input type="text" placeholder="Search courses..." class="search-input">
+      <button class="search-btn">🔍</button>
+    </div>
+    <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <nav class="app-nav" id="mobileNav">
       <a href="index.php">Courses</a>
-      <a href="../course.php?id=<?php echo $lesson['course_id']; ?>">Back to Course</a>
+      <a href="course.php?id=<?php echo $lesson['course_id']; ?>">Back to Course</a>
+      <?php if (isset($_SESSION['user_id'])) { ?>
+        <a href="../backend/logout.php" class="btn btn-secondary">Logout</a>
+      <?php } else { ?>
+        <a href="login.html" class="btn">Login</a>
+      <?php } ?>
     </nav>
   </div>
 </header>
@@ -89,6 +103,21 @@ $lesson = $result->fetch_assoc();
 </section>
 </div>
 </div>
+<script>
+function toggleMobileMenu() {
+  const nav = document.getElementById('mobileNav');
+  nav.classList.toggle('active');
+}
+
+// Close mobile menu when clicking outside
+document.addEventListener('click', function(event) {
+  const nav = document.getElementById('mobileNav');
+  const toggle = document.querySelector('.mobile-menu-toggle');
+  
+  if (!nav.contains(event.target) && !toggle.contains(event.target)) {
+    nav.classList.remove('active');
+  }
+});
+</script>
 </body>
 </html>
-    

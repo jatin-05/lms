@@ -21,7 +21,16 @@ $result = $conn->query($sql);
 <header class="app-header">
   <div class="header-inner">
     <div class="app-brand">LMS Portal</div>
-    <nav class="app-nav">
+    <div class="search-container">
+      <input type="text" placeholder="Search courses..." class="search-input">
+      <button class="search-btn">🔍</button>
+    </div>
+    <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <nav class="app-nav" id="mobileNav">
       <a href="login.html">Login</a>
       <a href="register.html">Register</a>
     </nav>
@@ -92,5 +101,21 @@ if ($result->num_rows > 0) {
 </div>
 </div>
 
+<script>
+function toggleMobileMenu() {
+  const nav = document.getElementById('mobileNav');
+  nav.classList.toggle('active');
+}
+
+// Close mobile menu when clicking outside
+document.addEventListener('click', function(event) {
+  const nav = document.getElementById('mobileNav');
+  const toggle = document.querySelector('.mobile-menu-toggle');
+  
+  if (!nav.contains(event.target) && !toggle.contains(event.target)) {
+    nav.classList.remove('active');
+  }
+});
+</script>
 </body>
 </html>

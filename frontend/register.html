@@ -12,9 +12,18 @@
 
 <header class="app-header">
   <div class="header-inner">
-    <div class="app-brand">LMS Registration</div>
-    <nav class="app-nav">
-      <a href="login.html">Login</a>
+    <div class="app-brand">LMS Portal</div>
+    <div class="search-container">
+      <input type="text" placeholder="Search courses..." class="search-input">
+      <button class="search-btn">🔍</button>
+    </div>
+    <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <nav class="app-nav" id="mobileNav">
+      <a href="login.html" class="btn">Login</a>
       <a href="index.php">Courses</a>
     </nav>
   </div>
@@ -27,26 +36,26 @@
 
     <form action="../backend/register.php" method="POST">
       <div class="form-group">
-        <label for="name">Name</label>
-        <input id="name" type="text" name="name" placeholder="Name" required>
+        <label for="name">Full Name</label>
+        <input id="name" type="text" name="name" placeholder="Enter your full name" required>
       </div>
       <div class="form-group">
-        <label for="email">Email</label>
-        <input id="email" type="email" name="email" placeholder="Email" required>
+        <label for="email">Email Address</label>
+        <input id="email" type="email" name="email" placeholder="Enter your email" required>
       </div>
       <div class="form-group">
         <label for="password">Password</label>
-        <input id="password" type="password" name="password" placeholder="Password" required>
+        <input id="password" type="password" name="password" placeholder="Create a strong password" required>
       </div>
       <div class="form-group">
-        <label for="role">I am a</label>
+        <label for="role">I want to</label>
         <select id="role" name="role">
-          <option value="student">Student</option>
-          <option value="instructor">Instructor</option>
+          <option value="student">Learn as a Student</option>
+          <option value="instructor">Teach as an Instructor</option>
         </select>
       </div>
       <div class="form-actions">
-        <button class="btn" type="submit">Register</button>
+        <button class="btn" type="submit">Create Account</button>
       </div>
     </form>
 
@@ -56,5 +65,21 @@
 </div>
 </div>
 
+<script>
+function toggleMobileMenu() {
+  const nav = document.getElementById('mobileNav');
+  nav.classList.toggle('active');
+}
+
+// Close mobile menu when clicking outside
+document.addEventListener('click', function(event) {
+  const nav = document.getElementById('mobileNav');
+  const toggle = document.querySelector('.mobile-menu-toggle');
+  
+  if (!nav.contains(event.target) && !toggle.contains(event.target)) {
+    nav.classList.remove('active');
+  }
+});
+</script>
 </body>
 </html>
