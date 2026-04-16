@@ -10,20 +10,27 @@ $user_id = $_SESSION['user_id'];
 $course_id = $_POST['course_id'];
 
 // Prevent duplicate enrollment
-$check = "SELECT * FROM enrollments WHERE user_id='$user_id' AND course_id='$course_id'";
+$check = "SELECT * FROM enrollments 
+          WHERE user_id='$user_id' AND course_id='$course_id'";
+
 $result = $conn->query($check);
 
 if ($result->num_rows > 0) {
-    echo "Already enrolled";
+    // Already enrolled → go to course
+    header("Location: ../frontend/course.php?id=$course_id");
     exit();
 }
 
-// Insert
+// Insert enrollment
 $sql = "INSERT INTO enrollments (user_id, course_id)
         VALUES ('$user_id', '$course_id')";
 
 if ($conn->query($sql) === TRUE) {
-    echo "Enrolled successfully!";
+
+    // ✅ Redirect to course page
+    header("Location: ../frontend/course.php?id=$course_id");
+    exit();
+
 } else {
     echo "Error: " . $conn->error;
 }
