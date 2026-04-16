@@ -50,104 +50,86 @@ $quiz_result = $conn->query($quiz_sql);
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $course['title']; ?></title>
-
-    <style>
-        body {
-            font-family: Arial;
-            padding: 20px;
-        }
-
-        .lesson-list li {
-            margin-bottom: 10px;
-        }
-
-        .enroll-btn {
-            margin-top: 15px;
-        }
-
-        .locked {
-            color: red;
-            font-weight: bold;
-        }
-
-        .quiz-box {
-            margin-top: 20px;
-            padding: 10px;
-            border: 1px solid #ccc;
-        }
-    </style>
+    <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
+<div class="page-shell">
+<div class="container">
 
-<h2><?php echo $course['title']; ?></h2>
-<p><?php echo $course['description']; ?></p>
+<header class="app-header">
+  <div class="header-inner">
+    <div class="app-brand">LMS Course</div>
+    <nav class="app-nav">
+      <a href="index.php">Courses</a>
+      <a href="login.html">Login</a>
+    </nav>
+  </div>
+</header>
 
-<!-- 🔐 Enrollment Button -->
-<?php if (!$is_enrolled && isset($_SESSION['role']) && $_SESSION['role'] == 'student') { ?>
-
-    <form action="../backend/enroll.php" method="POST" class="enroll-btn">
+<section class="hero-panel">
+  <div class="label-pill">Course</div>
+  <h1><?php echo $course['title']; ?></h1>
+  <p class="subheading"><?php echo $course['description']; ?></p>
+  <?php if (!$is_enrolled && isset($_SESSION['role']) && $_SESSION['role'] == 'student') { ?>
+    <div class="hero-actions">
+      <form action="../backend/enroll.php" method="POST">
         <input type="hidden" name="course_id" value="<?php echo $course_id; ?>">
-        <button type="submit">Enroll Now</button>
-    </form>
+        <button class="btn" type="submit">Enroll Now</button>
+      </form>
+      <a class="btn btn-secondary" href="index.php">← Back to Courses</a>
+    </div>
+  <?php } else { ?>
+    <div class="hero-actions">
+      <a class="btn btn-secondary" href="index.php">← Back to Courses</a>
+    </div>
+  <?php } ?>
+</section>
 
-<?php } ?>
-
-<!-- 📖 Lessons Section -->
-<h3>Lessons</h3>
-
-<?php if ($is_enrolled) { ?>
-
-    <?php if ($lessons->num_rows > 0) { ?>
-        <ul class="lesson-list">
+<div class="course-detail-grid">
+  <div class="course-summary">
+    <div class="card">
+      <h3>Lessons</h3>
+      <?php if ($is_enrolled) { ?>
+        <?php if ($lessons->num_rows > 0) { ?>
+          <ul class="lesson-list">
             <?php while($lesson = $lessons->fetch_assoc()) { ?>
-                <li>
-                    <a href="lesson.php?id=<?php echo $lesson['id']; ?>">
-                        <?php echo $lesson['title']; ?>
-                    </a>
-                </li>
+              <li>
+                <a href="lesson.php?id=<?php echo $lesson['id']; ?>">
+                  <?php echo $lesson['lesson_order'] . '. ' . $lesson['title']; ?>
+                </a>
+              </li>
             <?php } ?>
-        </ul>
-    <?php } else { ?>
-        <p>No lessons added yet.</p>
-    <?php } ?>
+          </ul>
+        <?php } else { ?>
+          <p>No lessons added yet.</p>
+        <?php } ?>
+      <?php } else { ?>
+        <p class="locked">🔒 Please enroll to access lessons.</p>
+      <?php } ?>
+    </div>
+  </div>
 
-<?php } else { ?>
-
-    <p class="locked">🔒 Please enroll to access lessons.</p>
-
-<?php } ?>
-
-
-<!-- 📝 QUIZ SECTION -->
-<h3>Quiz</h3>
-
-<div class="quiz-box">
-
-<?php if ($is_enrolled) { ?>
-
-    <?php if ($quiz_result->num_rows > 0) { 
+  <aside class="quiz-box">
+    <h3>Quiz</h3>
+    <?php if ($is_enrolled) { ?>
+      <?php if ($quiz_result->num_rows > 0) { 
         $quiz = $quiz_result->fetch_assoc();
-    ?>
-
-        <a href="quiz.php?id=<?php echo $quiz['id']; ?>">
-            📝 Attempt Quiz
-        </a>
-
+      ?>
+        <p class="subheading">Prepare for your course with this quiz.</p>
+        <a class="btn" href="quiz.php?id=<?php echo $quiz['id']; ?>">Attempt Quiz</a>
+      <?php } else { ?>
+        <p>No quiz available for this course yet.</p>
+      <?php } ?>
     <?php } else { ?>
-        <p>No quiz available for this course.</p>
+      <p class="locked">🔒 Enroll to access quiz.</p>
     <?php } ?>
-
-<?php } else { ?>
-
-    <p class="locked">🔒 Enroll to access quiz.</p>
-
-<?php } ?>
-
+  </aside>
 </div>
-
-<br>
-<a href="index.php">← Back to Courses</a>
+</div>
+</div>
 
 </body>
 </html>

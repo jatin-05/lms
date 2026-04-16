@@ -17,67 +17,78 @@ $lesson = $result->fetch_assoc();
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $lesson['title']; ?></title>
+    <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
+<div class="page-shell">
+<div class="container">
+<header class="app-header">
+  <div class="header-inner">
+    <div class="app-brand">Lesson</div>
+    <nav class="app-nav">
+      <a href="index.php">Courses</a>
+      <a href="../course.php?id=<?php echo $lesson['course_id']; ?>">Back to Course</a>
+    </nav>
+  </div>
+</header>
 
-<h2><?php echo $lesson['title']; ?></h2>
+<section class="card course-summary">
+  <h1><?php echo $lesson['title']; ?></h1>
 
-<?php 
-if (!empty($lesson['video_url'])) {
+  <?php 
+  if (!empty($lesson['video_url'])) {
+      $video_url = trim($lesson['video_url']);
+      $video_id = '';
 
-    $video_url = trim($lesson['video_url']);
-    $video_id = '';
+      if (strpos($video_url, 'watch?v=') !== false) {
+          parse_str(parse_url($video_url, PHP_URL_QUERY), $params);
+          $video_id = $params['v'] ?? '';
+      } elseif (strpos($video_url, 'youtu.be/') !== false) {
+          $parts = explode('/', $video_url);
+          $video_id = end($parts);
+      }
 
-    // Case 1: youtube.com/watch?v=
-    if (strpos($video_url, 'watch?v=') !== false) {
-        parse_str(parse_url($video_url, PHP_URL_QUERY), $params);
-        $video_id = $params['v'] ?? '';
-    }
-
-    // Case 2: youtu.be/
-    elseif (strpos($video_url, 'youtu.be/') !== false) {
-        $parts = explode('/', $video_url);
-        $video_id = end($parts);
-    }
-
-    // Debug (remove later if needed)
-    // echo "Video ID: " . $video_id;
-
-    if (!empty($video_id)) {
-?>
-        <iframe width="700" height="400"
-            src="https://www.youtube.com/embed/<?php echo $video_id; ?>"
-            frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen>
+      if (!empty($video_id)) {
+  ?>
+      <div class="video-wrap">
+        <iframe width="100%" height="420"
+          src="https://www.youtube.com/embed/<?php echo $video_id; ?>"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
         </iframe>
-<?php 
-    } else {
-        echo "<p>Invalid video URL</p>";
-    }
-}
-?>
-<?php
-$user_id = $_SESSION['user_id'] ?? 0;
+      </div>
+  <?php 
+      } else {
+          echo "<p class=\"notification\">Invalid video URL</p>";
+      }
+  }
+  ?>
 
-$check = "SELECT * FROM progress WHERE user_id='$user_id' AND lesson_id='$lesson_id'";
-$result = $conn->query($check);
+  <?php
+  $user_id = $_SESSION['user_id'] ?? 0;
+  $check = "SELECT * FROM progress WHERE user_id='$user_id' AND lesson_id='$lesson_id'";
+  $result = $conn->query($check);
 
-if ($result->num_rows > 0) {
-    echo "<p style='color:green;'>✔ Completed</p>";
-} else {
-?>
+  if ($result->num_rows > 0) {
+  ?>
+      <p class="status-message success">✔ Completed</p>
+  <?php } else { ?>
+      <form action="../backend/complete_lesson.php" method="POST" class="form-actions">
+          <input type="hidden" name="lesson_id" value="<?php echo $lesson_id; ?>">
+          <button class="btn" type="submit">Mark as Complete</button>
+      </form>
+  <?php } ?>
 
-<form action="../backend/complete_lesson.php" method="POST">
-    <input type="hidden" name="lesson_id" value="<?php echo $lesson_id; ?>">
-    <button type="submit">Mark as Complete</button>
-</form>
-
-<?php } ?>
-
-<p><?php echo $lesson['content']; ?></p>
-
+  <div class="lesson-content">
+    <p><?php echo nl2br(htmlspecialchars($lesson['content'])); ?></p>
+  </div>
+</section>
+</div>
+</div>
 </body>
 </html>
     

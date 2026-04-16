@@ -9,60 +9,36 @@ $result = $conn->query($sql);
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LMS Home</title>
-
-    <style>
-        body {
-            font-family: Arial;
-            padding: 20px;
-        }
-
-        .course-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-
-        .course-card {
-            width: 250px;
-            border: 1px solid #ccc;
-            padding: 10px;
-            border-radius: 10px;
-            transition: 0.2s;
-        }
-
-        .course-card:hover {
-            box-shadow: 0 0 10px rgba(0,0,0,0.2);
-        }
-
-        .course-card img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-        }
-
-        a {
-            text-decoration: none;
-            color: black;
-        }
-
-        .enrolled {
-            color: green;
-            font-weight: bold;
-        }
-
-        .btn {
-            margin-top: 8px;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-    </style>
+    <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
+<div class="page-shell">
+<div class="container">
 
-<h2>All Courses</h2>
+<header class="app-header">
+  <div class="header-inner">
+    <div class="app-brand">LMS Portal</div>
+    <nav class="app-nav">
+      <a href="login.html">Login</a>
+      <a href="register.html">Register</a>
+    </nav>
+  </div>
+</header>
 
-<div class="course-container">
+<section class="hero-panel">
+  <div class="label-pill">Discover</div>
+  <h1>Find the right course for your next milestone</h1>
+  <p class="subheading">Browse high-quality learning paths for students, instructors, and administrators with lessons, quizzes, and progress tracking.</p>
+  <div class="hero-actions">
+    <a class="btn" href="#courses">Browse Courses</a>
+    <a class="btn btn-secondary" href="login.html">Login</a>
+  </div>
+</section>
+
+<div id="courses" class="course-container">
 
 <?php
 if ($result->num_rows > 0) {
@@ -81,28 +57,29 @@ if ($result->num_rows > 0) {
 ?>
 
 <div class="course-card">
-
-    <!-- Clickable content -->
-    <a href="course.php?id=<?php echo $row['id']; ?>">
+    <a class="card-link" href="course.php?id=<?php echo $row['id']; ?>">
         <img src="../uploads/<?php echo $row['thumbnail']; ?>">
-        <h3><?php echo $row['title']; ?></h3>
-        <p><?php echo substr($row['description'], 0, 100); ?>...</p>
+        <div class="course-card-content">
+            <span class="label-pill">Course</span>
+            <h3><?php echo $row['title']; ?></h3>
+            <p><?php echo substr($row['description'], 0, 100); ?>...</p>
+        </div>
     </a>
 
-    <!-- Student actions -->
-    <?php if (isset($_SESSION['role']) && $_SESSION['role'] == 'student') { ?>
-
-        <?php if ($is_enrolled) { ?>
-            <p class="enrolled">✔ Enrolled</p>
+    <div class="course-card-footer">
+        <?php if (isset($_SESSION['role']) && $_SESSION['role'] == 'student') { ?>
+            <?php if ($is_enrolled) { ?>
+                <span class="status-pill success">✔ Enrolled</span>
+            <?php } else { ?>
+                <form action="../backend/enroll.php" method="POST">
+                    <input type="hidden" name="course_id" value="<?php echo $row['id']; ?>">
+                    <button class="btn" type="submit">Enroll</button>
+                </form>
+            <?php } ?>
         <?php } else { ?>
-            <form action="../backend/enroll.php" method="POST">
-                <input type="hidden" name="course_id" value="<?php echo $row['id']; ?>">
-                <button class="btn" type="submit">Enroll</button>
-            </form>
+            <span class="status-pill">View course details</span>
         <?php } ?>
-
-    <?php } ?>
-
+    </div>
 </div>
 
 <?php
@@ -112,6 +89,7 @@ if ($result->num_rows > 0) {
 }
 ?>
 
+</div>
 </div>
 
 </body>

@@ -16,108 +16,22 @@ $result = $conn->query($sql);
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Instructor Dashboard</title>
-
-    <style>
-        body {
-            font-family: Arial;
-            margin: 0;
-            background: #f5f5f5;
-        }
-
-        /* 🔝 Navbar */
-        .navbar {
-            background: #222;
-            color: white;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .navbar a {
-            color: white;
-            text-decoration: none;
-            margin-left: 15px;
-        }
-
-        .container {
-            padding: 20px;
-        }
-
-        /* 🧱 Grid */
-        .course-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-
-        /* 📦 Card */
-        .course-card {
-            background: white;
-            border-radius: 12px;
-            padding: 15px;
-            width: 280px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-
-        .course-card h4 {
-            margin: 0 0 10px 0;
-        }
-
-        /* 🔘 Buttons */
-        .btn {
-            display: inline-block;
-            padding: 5px 10px;
-            margin: 3px 2px;
-            background: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-size: 12px;
-        }
-
-        .btn:hover {
-            background: #0056b3;
-        }
-
-        .btn-danger {
-            background: red;
-        }
-
-        .btn-success {
-            background: green;
-        }
-
-        /* 📚 Lesson list */
-        .lesson-list {
-            max-height: 120px;
-            overflow-y: auto;
-            margin-top: 10px;
-            padding-left: 10px;
-            font-size: 13px;
-        }
-
-        .lesson-item {
-            margin-bottom: 5px;
-        }
-
-        .quiz-status {
-            margin-top: 5px;
-            font-size: 13px;
-        }
-    </style>
+    <link rel="stylesheet" href="../assets/styles.css">
 </head>
 <body>
-
-<!-- 🔝 Navbar -->
-<div class="navbar">
-    <div>Instructor Panel</div>
-    <div>
-        Welcome, <?php echo $_SESSION['name']; ?>
-        <a href="../../backend/logout.php">Logout</a>
-    </div>
-</div>
-
+<header class="app-header">
+  <div class="header-inner">
+    <div class="app-brand">Instructor Panel</div>
+    <nav class="app-nav">
+      <span>Welcome, <?php echo $_SESSION['name']; ?></span>
+      <a href="../../backend/logout.php">Logout</a>
+    </nav>
+  </div>
+</header>
+<div class="page-shell">
 <div class="container">
 
 <a class="btn btn-success" href="create_course.php">➕ Create New Course</a>
@@ -158,10 +72,10 @@ while($row = $result->fetch_assoc()) {
         <?php if ($quiz_result->num_rows > 0) { 
             $quiz = $quiz_result->fetch_assoc();
         ?>
-            <span style="color:green;">✔ Quiz Created</span><br>
+            <span class="status-message success">✔ Quiz Created</span><br>
             <a class="btn" href="../quiz.php?id=<?php echo $quiz['id']; ?>">View Quiz</a>
         <?php } else { ?>
-            <span style="color:red;">No quiz</span>
+            <span class="status-message error">No quiz</span>
         <?php } ?>
     </div>
 
@@ -188,7 +102,6 @@ while($row = $result->fetch_assoc()) {
 <?php } ?>
 
 </div>
-
 </div>
 
 </body>

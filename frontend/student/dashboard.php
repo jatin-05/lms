@@ -20,38 +20,25 @@ $result = $conn->query($sql);
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Dashboard</title>
-
-    <style>
-        body { font-family: Arial; }
-
-        .course-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-
-        .course-card {
-            width: 250px;
-            border: 1px solid #ccc;
-            padding: 10px;
-            border-radius: 10px;
-        }
-
-        .course-card img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-        }
-    </style>
+    <link rel="stylesheet" href="../assets/styles.css">
 </head>
 <body>
-<div style="background:#333; padding:10px;">
-    <a href="../index.php" style="color:white; margin-right:20px;">Home</a>
-    <a href="dashboard.php" style="color:white; margin-right:20px;">My Courses</a>
-    <a href="../../backend/logout.php" style="color:white;">Logout</a>
-</div>
-<h2>Welcome, <?php echo $_SESSION['name']; ?></h2>
+<header class="app-header">
+  <div class="header-inner">
+    <div class="app-brand">Student Dashboard</div>
+    <nav class="app-nav">
+      <a href="../index.php">Home</a>
+      <a href="dashboard.php">My Courses</a>
+      <a href="../../backend/logout.php">Logout</a>
+    </nav>
+  </div>
+</header>
+<div class="page-shell">
+<div class="container">
+<h2 class="page-title">Welcome, <?php echo $_SESSION['name']; ?></h2>
 
 <h3>My Courses</h3>
 
