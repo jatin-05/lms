@@ -132,7 +132,7 @@ include 'partials/header.php';
 </section>
 <?php } ?>
 
-<div class="split-grid">
+<section class="info-grid">
   <article class="panel-card">
     <h3>What you will learn</h3>
     <p>Complete structured lessons, then test understanding with quizzes linked to this course.</p>
@@ -141,12 +141,12 @@ include 'partials/header.php';
     <h3>How to progress</h3>
     <p>Open lessons in order, mark completion, and attempt quizzes when available for this course.</p>
   </article>
-</div>
+</section>
 
-<div id="courseDetails" class="course-detail-grid">
+<section id="courseDetails" class="course-detail-grid">
   <div class="course-summary">
-    <div class="card">
-      <h3>Lessons</h3>
+    <div class="content-card">
+      <h3 class="section-title">Lessons</h3>
       <?php if ($is_enrolled) { ?>
         <?php if ($lessonTotal > 0) { ?>
           <ul class="lesson-list">
@@ -167,8 +167,8 @@ include 'partials/header.php';
     </div>
   </div>
 
-  <aside class="quiz-box">
-    <h3>Quiz</h3>
+  <aside class="content-card quiz-card">
+    <h3 class="section-title">Quiz</h3>
     <?php if ($is_enrolled) { ?>
       <?php if ($quiz_result->num_rows > 0) { 
         $quiz = $quiz_result->fetch_assoc();

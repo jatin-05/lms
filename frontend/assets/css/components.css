@@ -131,8 +131,14 @@
 .course-card-footer {
   margin-top: auto;
   border-top: 1px solid var(--border);
-  background: var(--surface-alt);
-  padding: 14px 18px;
+  background: linear-gradient(135deg, var(--surface-alt) 0%, #e0e7ff 100%);
+  padding: 16px 18px;
+}
+
+.course-card-footer .btn {
+  min-height: 40px;
+  padding: 10px 20px;
+  font-size: 0.9rem;
 }
 
 .feature-grid {

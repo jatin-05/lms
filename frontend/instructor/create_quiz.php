@@ -6,7 +6,11 @@ if ($_SESSION['role'] != 'instructor') {
     die("Access denied");
 }
 
-$course_id = $_GET['course_id'];
+$course_id = isset($_GET['course_id']) ? intval($_GET['course_id']) : 0;
+
+if ($course_id === 0) {
+    die("Error: Course ID is required");
+}
 
 // Check if quiz exists
 $check = "SELECT * FROM quizzes WHERE course_id='$course_id'";
@@ -109,7 +113,7 @@ if ($res->num_rows > 0) {
                 <option value="d">D</option>
             </select>
 
-            <button type="submit">Add Question</button>
+            <button class="btn" type="submit">Add Question</button>
         </form>
     </div>
 
@@ -124,7 +128,7 @@ if ($res->num_rows > 0) {
             
             <input type="text" name="title" placeholder="Quiz Title" required>
             
-            <button type="submit">Create Quiz</button>
+            <button class="btn" type="submit">Create Quiz</button>
         </form>
     </div>
 
