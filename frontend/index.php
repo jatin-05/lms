@@ -67,7 +67,6 @@ if ($result->num_rows > 0) {
 
 <div class="course-card">
     <a class="card-link" href="course.php?id=<?php echo $row['id']; ?>">
-        <img src="../uploads/<?php echo $row['thumbnail']; ?>">
         <div class="course-card-content">
             <span class="label-pill">Course</span>
             <h3><?php echo $row['title']; ?></h3>
@@ -114,6 +113,42 @@ document.addEventListener('click', function(event) {
   
   if (!nav.contains(event.target) && !toggle.contains(event.target)) {
     nav.classList.remove('active');
+  }
+});
+
+// Search functionality
+function performSearch() {
+  const searchInput = document.querySelector('.search-input');
+  const searchQuery = searchInput.value.trim().toLowerCase();
+  
+  if (searchQuery.length === 0) {
+    // Reset to show all courses
+    const courseCards = document.querySelectorAll('.course-card');
+    courseCards.forEach(card => {
+      card.style.display = 'flex';
+    });
+    return;
+  }
+  
+  // Filter courses based on search
+  const courseCards = document.querySelectorAll('.course-card');
+  courseCards.forEach(card => {
+    const title = card.querySelector('h3, h4').textContent.toLowerCase();
+    const description = card.querySelector('p').textContent.toLowerCase();
+    
+    if (title.includes(searchQuery) || description.includes(searchQuery)) {
+      card.style.display = 'flex';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+
+// Add search event listener
+document.addEventListener('DOMContentLoaded', function() {
+  const searchInput = document.querySelector('.search-input');
+  if (searchInput) {
+    searchInput.addEventListener('input', performSearch);
   }
 });
 </script>
