@@ -74,9 +74,13 @@ include 'partials/header.php';
       <p class="status-message success">✔ Completed</p>
   <?php } else { ?>
       <form action="../backend/complete_lesson.php" method="POST" class="form-actions">
-          <input type="hidden" name="lesson_id" value="<?php echo $lesson_id; ?>">
-          <button class="btn" type="submit">Mark as Complete</button>
-      </form>
+    <input type="hidden" name="lesson_id" value="<?php echo $lesson_id; ?>">
+    
+    <!-- ✅ ADD THIS LINE -->
+    <input type="hidden" name="course_id" value="<?php echo $lesson['course_id']; ?>">
+    
+    <button class="btn" type="submit">Mark as Complete</button>
+</form>
   <?php } ?>
 
   <div class="lesson-content">

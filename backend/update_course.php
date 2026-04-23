@@ -18,6 +18,8 @@ $sql = "UPDATE courses
 
 if ($conn->query($sql)) {
     echo "Course updated successfully!";
+    header("Location: ../frontend/instructor/dashboard.php");
+
 } else {
     echo "Error: " . $conn->error;
 }

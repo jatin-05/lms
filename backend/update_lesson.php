@@ -20,4 +20,6 @@ $sql = "UPDATE lessons
 $conn->query($sql);
 
 echo "Lesson updated!";
+header("Location: ../frontend/instructor/dashboard.php");
+
 ?>
