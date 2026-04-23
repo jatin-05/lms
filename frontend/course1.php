@@ -49,7 +49,7 @@ if ($lessons) {
 }
 $lessonTotal = count($lessonItems);
 
-// Get quiz
+// ✅ Get quiz (FIXED POSITION)
 $quiz_sql = "SELECT * FROM quizzes WHERE course_id='$course_id'";
 $quiz_result = $conn->query($quiz_sql);
 $quizTotal = $quiz_result ? $quiz_result->num_rows : 0;
@@ -59,17 +59,14 @@ $cssPath = 'assets/styles.css';
 $scriptPath = 'assets/js/app.js';
 $brandHref = 'index.php';
 $showSearch = false;
-
 $navLinks = [
     ['href' => 'index.php', 'label' => 'Courses']
 ];
-
 if (isset($_SESSION['user_id'])) {
     $navLinks[] = ['href' => '../backend/logout.php', 'label' => 'Logout', 'class' => 'btn btn-secondary'];
 } else {
     $navLinks[] = ['href' => 'login.html', 'label' => 'Login', 'class' => 'btn'];
 }
-
 include 'partials/layout_start.php';
 include 'partials/header.php';
 ?>
@@ -79,115 +76,111 @@ include 'partials/header.php';
     <div class="label-pill">Course</div>
     <h1><?php echo $course['title']; ?></h1>
     <p class="subheading"><?php echo $course['description']; ?></p>
-
     <?php if (!$is_enrolled && isset($_SESSION['role']) && $_SESSION['role'] == 'student') { ?>
       <div class="hero-actions">
         <form action="../backend/enroll.php" method="POST">
           <input type="hidden" name="course_id" value="<?php echo $course_id; ?>">
           <button class="btn" type="submit">Enroll Now</button>
         </form>
-        <a class="btn btn-secondary" href="index.php">← Back</a>
+        <a class="btn btn-secondary" href="index.php">← Back to Courses</a>
       </div>
     <?php } else { ?>
       <div class="hero-actions">
-        <a class="btn btn-secondary" href="index.php">← Back</a>
+        <a class="btn btn-secondary" href="index.php">← Back to Courses</a>
       </div>
     <?php } ?>
   </div>
-
   <div class="hero-media">
-    <img src="assets/images/hero-learning.jpg" alt="">
+    <img src="assets/images/hero-learning.jpg" alt="Keep learning hero image">
   </div>
 </section>
 
 <section class="stats-grid">
   <article class="stat-card">
     <div class="stat-value"><?php echo $lessonTotal; ?></div>
-    <div class="stat-label">Lessons</div>
+    <div class="stat-label">Total Lessons</div>
   </article>
-
   <article class="stat-card">
     <div class="stat-value"><?php echo $quizTotal; ?></div>
-    <div class="stat-label">Quizzes</div>
+    <div class="stat-label">Available Quizzes</div>
   </article>
-
   <article class="stat-card">
     <div class="stat-value"><?php echo $is_enrolled ? 'Yes' : 'No'; ?></div>
-    <div class="stat-label">Enrolled</div>
+    <div class="stat-label">Enrollment Status</div>
   </article>
 </section>
 
 <?php if ($lessonTotal > 0) { ?>
 <section class="slider-shell">
-  <h3>Lesson Preview</h3>
-
-  <div class="slider-track">
+  <div class="slider-header">
+    <h3 class="section-heading">Lesson Preview Slider</h3>
+    <div class="slider-nav">
+      <a href="#lessonSlider">Start</a>
+      <a href="#courseDetails">Details</a>
+    </div>
+  </div>
+  <div class="slider-track" id="lessonSlider">
     <?php foreach ($lessonItems as $lessonCard) { ?>
       <article class="slider-card">
-        <span>Lesson <?php echo $lessonCard['lesson_order']; ?></span>
+        <span class="label-pill">Lesson <?php echo $lessonCard['lesson_order']; ?></span>
         <h4><?php echo htmlspecialchars($lessonCard['title']); ?></h4>
-
-        <p>
-          <?php echo htmlspecialchars(substr(strip_tags($lessonCard['content']), 0, 120)); ?>...
-        </p>
-
-        <?php if ($is_enrolled) { ?>
-          <a class="mini-btn" href="lesson.php?id=<?php echo $lessonCard['id']; ?>">
-            Open Lesson
-          </a>
-        <?php } else { ?>
-          <span class="mini-btn disabled">🔒 Locked</span>
-        <?php } ?>
+        <p><?php echo htmlspecialchars(substr(strip_tags($lessonCard['content']), 0, 140)); ?>...</p>
+        <a class="mini-btn" href="lesson.php?id=<?php echo $lessonCard['id']; ?>">Open Lesson</a>
       </article>
     <?php } ?>
   </div>
 </section>
 <?php } ?>
 
-<section class="course-detail-grid">
-
-  <div class="content-card">
-    <h3>Lessons</h3>
-
-    <?php if ($lessonTotal > 0) { ?>
-      <ul class="lesson-list">
-        <?php foreach($lessonItems as $lesson) { ?>
-          <li>
-            <?php if ($is_enrolled) { ?>
-              <a href="lesson.php?id=<?php echo $lesson['id']; ?>">
-                <?php echo $lesson['lesson_order'] . '. ' . $lesson['title']; ?>
-              </a>
-            <?php } else { ?>
-              <span class="locked">
-                🔒 <?php echo $lesson['lesson_order'] . '. ' . $lesson['title']; ?>
-              </span>
-            <?php } ?>
-          </li>
-        <?php } ?>
-      </ul>
-    <?php } else { ?>
-      <p>No lessons yet.</p>
-    <?php } ?>
-  </div>
-
-  <div class="content-card">
-    <h3>Quiz</h3>
-
-    <?php if ($is_enrolled) { ?>
-      <?php if ($quizTotal > 0) { 
-        $quiz = $quiz_result->fetch_assoc();
-      ?>
-        <a class="btn" href="quiz.php?id=<?php echo $quiz['id']; ?>">
-          Attempt Quiz
-        </a>
-      <?php } else { ?>
-        <p>No quiz available.</p>
-      <?php } ?>
-    <?php } else { ?>
-      <p class="locked">🔒 Enroll to access quiz</p>
-    <?php } ?>
-  </div>
-
+<section class="info-grid">
+  <article class="panel-card">
+    <h3>What you will learn</h3>
+    <p>Complete structured lessons, then test understanding with quizzes linked to this course.</p>
+  </article>
+  <article class="panel-card">
+    <h3>How to progress</h3>
+    <p>Open lessons in order, mark completion, and attempt quizzes when available for this course.</p>
+  </article>
 </section>
 
+<section id="courseDetails" class="course-detail-grid">
+  <div class="course-summary">
+    <div class="content-card">
+      <h3 class="section-title">Lessons</h3>
+      <?php if ($is_enrolled) { ?>
+        <?php if ($lessonTotal > 0) { ?>
+          <ul class="lesson-list">
+            <?php foreach($lessonItems as $lesson) { ?>
+              <li>
+                <a href="lesson.php?id=<?php echo $lesson['id']; ?>">
+                  <?php echo $lesson['lesson_order'] . '. ' . $lesson['title']; ?>
+                </a>
+              </li>
+            <?php } ?>
+          </ul>
+        <?php } else { ?>
+          <p class="empty-note">No lessons added yet.</p>
+        <?php } ?>
+      <?php } else { ?>
+        <p class="locked">🔒 Please enroll to access lessons.</p>
+      <?php } ?>
+    </div>
+  </div>
+
+  <aside class="content-card quiz-card">
+    <h3 class="section-title">Quiz</h3>
+    <?php if ($is_enrolled) { ?>
+      <?php if ($quiz_result->num_rows > 0) { 
+        $quiz = $quiz_result->fetch_assoc();
+      ?>
+        <p class="subheading">Prepare for your course with this quiz.</p>
+        <a class="btn" href="quiz.php?id=<?php echo $quiz['id']; ?>">Attempt Quiz</a>
+      <?php } else { ?>
+        <p>No quiz available for this course yet.</p>
+      <?php } ?>
+    <?php } else { ?>
+      <p class="locked">🔒 Enroll to access quiz.</p>
+    <?php } ?>
+  </aside>
+</div>
 <?php include 'partials/layout_end.php'; ?>
