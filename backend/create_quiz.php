@@ -18,7 +18,8 @@ if ($conn->query($sql)) {
     $quiz_id = $conn->insert_id;
 
     // 🔥 Redirect to add questions
-    header("Location: ../frontend/instructor/create_quiz.php?quiz_id=$quiz_id");
+    // header("Location: ../frontend/instructor/create_quiz.php?quiz_id=$quiz_id");
+    header("Location: ../frontend/instructor/create_quiz.php?course_id=$course_id");
     exit();
 
 } else {
