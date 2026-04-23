@@ -28,19 +28,38 @@ if ($lesson['instructor_id'] != $_SESSION['user_id']) {
 }
 ?>
 
-<h2>Edit Lesson</h2>
-
-<form action="../../backend/update_lesson.php" method="POST">
-
-    <input type="hidden" name="lesson_id" value="<?php echo $lesson['id']; ?>">
-
-    <input type="text" name="title" value="<?php echo $lesson['title']; ?>"><br><br>
-
-    <input type="text" name="video_url" value="<?php echo $lesson['video_url']; ?>"><br><br>
-
-    <textarea name="content"><?php echo $lesson['content']; ?></textarea><br><br>
-
-    <input type="number" name="lesson_order" value="<?php echo $lesson['lesson_order']; ?>"><br><br>
-
-    <button type="submit">Update Lesson</button>
-</form>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Lesson</title>
+    <link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header class="app-header">
+  <div class="header-inner">
+    <div class="app-brand">Edit Lesson</div>
+    <nav class="app-nav">
+      <a href="dashboard.php">Dashboard</a>
+      <a href="../../backend/logout.php">Logout</a>
+    </nav>
+  </div>
+</header>
+<div class="page-shell">
+<div class="container">
+<section class="form-card">
+  <h2 class="page-title">Edit Lesson</h2>
+  <form action="../../backend/update_lesson.php" method="POST">
+      <input type="hidden" name="lesson_id" value="<?php echo $lesson['id']; ?>">
+      <input type="text" name="title" value="<?php echo $lesson['title']; ?>">
+      <input type="text" name="video_url" value="<?php echo $lesson['video_url']; ?>">
+      <textarea name="content"><?php echo $lesson['content']; ?></textarea>
+      <input type="number" name="lesson_order" value="<?php echo $lesson['lesson_order']; ?>">
+      <button type="submit">Update Lesson</button>
+  </form>
+</section>
+</div>
+</div>
+</body>
+</html>

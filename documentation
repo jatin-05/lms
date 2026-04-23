@@ -1,0 +1,454 @@
+# **Learning Management System (LMS) - Project Overview & Viva Questions**
+
+## 📚 **Project Overview**
+
+This is a **Learning Management System** built with **PHP, MySQL, HTML, CSS, and JavaScript**. It's a web-based platform designed for students, instructors, and administrators to manage online learning effectively.
+
+**Language Composition:**
+- PHP: 68.8% (Backend logic)
+- CSS: 24.3% (Styling)
+- HTML: 4.9% (Structure)
+- JavaScript: 2% (Interactivity)
+
+---
+
+## 🏗️ **Architecture & Working**
+
+### **System Architecture**
+
+```
+LMS Project
+├── Backend (PHP) - Server-side logic
+│   ├── db.php (Database connection)
+│   ├── Authentication (login.php, register.php, logout.php)
+│   ├── Course Management (create_course.php, update_course.php, delete_course.php)
+│   ├── Lesson Management (add_lesson.php, update_lesson.php, delete_lesson.php)
+│   ├── Quiz Management (create_quiz.php, add_question.php, submit_quiz.php)
+│   ├── Enrollment (enroll.php)
+│   └── Progress Tracking (complete_lesson.php)
+│
+├── Frontend (HTML/PHP/CSS)
+│   ├── Public Pages
+│   │   ├── login.html
+│   │   ├── register.html
+│   │   ├── index.php (Home page with courses)
+│   │   ├── course.php (Course details)
+│   │   ├── lesson.php (Lesson content)
+│   │   └── quiz.php (Quiz interface)
+│   ├── Student Dashboard (student/*)
+│   ├── Instructor Dashboard (instructor/*)
+│   ├── Admin Dashboard (admin/*)
+│   └── Assets (CSS, JS, Images)
+│
+└── Database (MySQL)
+    ├── users table
+    ├── courses table
+    ├── lessons table
+    ├── enrollments table
+    ├── quizzes table
+    ├── questions table
+    ├── results table
+    └── progress table
+```
+
+### **Key Components Explanation**
+
+#### **1. Database Connection (`db.php`)**
+```php
+$host = "localhost";
+$user = "root";
+$pass = "";
+$db = "lms_db";
+$conn = new mysqli($host, $user, $pass, $db);
+```
+- Establishes MySQLi connection to `lms_db` database
+- Dies with error message if connection fails
+- Used throughout the application
+
+#### **2. User Authentication System**
+
+**Registration (`register.php`)**
+- Users create account with: name, email, password, role (student/instructor/admin)
+- Password is hashed using PHP's `password_hash()` with DEFAULT algorithm
+- Data inserted into `users` table
+- Redirects to login page on success
+
+**Login (`login.php`)**
+- Takes email and password from form
+- Queries `users` table for matching email
+- Validates password using `password_verify()`
+- Creates session variables: `user_id`, `role`, `name`
+- **Role-based redirect:**
+  - Student → `student/dashboard.php`
+  - Instructor → `instructor/dashboard.php`
+  - Admin → `admin/dashboard.php`
+
+**Logout (`logout.php`)**
+- Destroys user session
+- Redirects to login page
+
+#### **3. Course Management**
+- **Create:** Instructors create courses with title, description, thumbnail, auto-linked to instructor_id
+- **Update:** Instructors can modify course details
+- **Delete:** Removes course and cascades to related lessons/enrollments
+- **Display:** Public course listing on home page with enrollment status
+
+#### **4. Lesson Management**
+- **Add:** Instructors add lessons to courses with video_url, content, order
+- **Complete:** Students mark lessons as done (tracked in `progress` table)
+- **View:** Lessons displayed in course with completion tracking
+
+#### **5. Quiz System**
+- **Create:** Instructors add quizzes to courses
+- **Questions:** Multiple choice (4 options A-D) with one correct answer
+- **Submit:** Students answer questions, scored automatically
+- **Results:** Stored in `results` table with user_id, quiz_id, score
+
+#### **6. Enrollment & Progress**
+- Students enroll in courses
+- Enrollment stored in `enrollments` table
+- Progress tracked in `progress` table (completed lessons)
+- Dashboard shows enrolled courses and completion status
+
+---
+
+## 🗄️ **Database Schema**
+
+```sql
+-- Users with role-based access control
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(100) UNIQUE,
+    password VARCHAR(255),
+    role ENUM('student', 'instructor', 'admin') DEFAULT 'student',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Courses created by instructors
+CREATE TABLE courses (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255),
+    description TEXT,
+    instructor_id INT,
+    thumbnail VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Enrollments linking students to courses
+CREATE TABLE enrollments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    course_id INT,
+    enrolled_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Course lessons/modules
+CREATE TABLE lessons (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    course_id INT,
+    title VARCHAR(255),
+    video_url VARCHAR(255),
+    content TEXT,
+    lesson_order INT
+);
+
+-- Student progress tracking
+CREATE TABLE progress (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    lesson_id INT,
+    completed TINYINT(1) DEFAULT 1
+);
+
+-- Quizzes for courses
+CREATE TABLE quizzes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    course_id INT,
+    title VARCHAR(255)
+);
+
+-- Quiz questions (multiple choice)
+CREATE TABLE questions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    quiz_id INT,
+    question TEXT,
+    option_a VARCHAR(255),
+    option_b VARCHAR(255),
+    option_c VARCHAR(255),
+    option_d VARCHAR(255),
+    correct_option CHAR(1)
+);
+
+-- Quiz results/scores
+CREATE TABLE results (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    quiz_id INT,
+    score INT
+);
+```
+
+---
+
+## 🔐 **Security Analysis**
+
+### ⚠️ **Vulnerabilities Found:**
+
+1. **SQL Injection Risk**
+   - Direct string interpolation in queries: `"SELECT * FROM users WHERE email='$email'"`
+   - **Fix:** Use prepared statements with parameterized queries
+
+2. **No Input Validation**
+   - Inputs not sanitized before database operations
+   - **Fix:** Use `htmlspecialchars()`, `mysqli_real_escape_string()`, or prepared statements
+
+3. **Password Storage**
+   - ✅ Correctly using `password_hash()` and `password_verify()`
+
+4. **Session Security**
+   - No HTTPS enforcement
+   - **Fix:** Set `session.secure` and `session.httponly` flags
+
+5. **CSRF Protection**
+   - No CSRF tokens in forms
+   - **Fix:** Generate and validate CSRF tokens
+
+---
+
+## 📝 **Viva Questions & Answers**
+
+### **Basic Understanding**
+
+**Q1. What is the purpose of this LMS project?**
+A: This is a Learning Management System designed to facilitate online education with role-based access (student, instructor, admin). It allows instructors to create courses with lessons and quizzes, students to enroll and track progress, and provides a complete learning ecosystem.
+
+**Q2. What technologies are used in this project?**
+A: 
+- Backend: PHP (server-side scripting)
+- Frontend: HTML, CSS, JavaScript
+- Database: MySQL
+- Server: Apache (via XAMPP)
+
+**Q3. Explain the role-based access control system.**
+A: Users are assigned roles during registration:
+- **Student:** Can enroll in courses, view lessons, complete quizzes, track progress
+- **Instructor:** Can create/manage courses, add lessons and quizzes, view student results
+- **Admin:** Full system access and management capabilities
+- Login redirects users to their respective dashboards based on role
+
+**Q4. How does the authentication system work?**
+A: 
+1. User registers with email and password
+2. Password is hashed using `password_hash()` function
+3. User data stored in `users` table
+4. On login, email is looked up, password verified with `password_verify()`
+5. Session variables created (`user_id`, `role`, `name`)
+6. User redirected to appropriate dashboard
+
+**Q5. What is the relationship between users, courses, and enrollments?**
+A:
+- `users` table contains all system users
+- `courses` table contains courses (linked to instructor_id)
+- `enrollments` table is a junction table linking students to courses
+- Enrollment stores user_id and course_id to track which students are in which courses
+
+---
+
+### **Database & Data Management**
+
+**Q6. Explain the database schema of this LMS.**
+A: The database has 8 main tables:
+- `users` - Stores user info with roles
+- `courses` - Courses created by instructors
+- `lessons` - Lesson modules within courses
+- `enrollments` - Student-course relationships
+- `progress` - Lesson completion status
+- `quizzes` - Quiz assessments for courses
+- `questions` - Multiple-choice questions (4 options)
+- `results` - Quiz scores for students
+
+**Q7. How is student progress tracked?**
+A: 
+- When a student completes a lesson, `complete_lesson.php` inserts a record into `progress` table
+- Stores: user_id, lesson_id, completed (boolean)
+- Dashboard queries progress table to show completion percentage
+- Students can resume where they left off
+
+**Q8. How does the quiz system work?**
+A:
+1. Instructor creates quiz linked to course
+2. Instructor adds questions (multiple choice with A-D options)
+3. Student takes quiz by answering all questions
+4. `submit_quiz.php` calculates score (correct answers)
+5. Result stored in `results` table with user_id, quiz_id, score
+
+**Q9. What is the purpose of each PHP backend file?**
+A:
+| File | Purpose |
+|------|---------|
+| db.php | Database connection |
+| login.php | User authentication |
+| register.php | New user registration |
+| logout.php | Session termination |
+| create_course.php | Add new course |
+| create_quiz.php | Add new quiz |
+| add_lesson.php | Add lesson to course |
+| add_question.php | Add question to quiz |
+| enroll.php | Enroll student in course |
+| complete_lesson.php | Mark lesson as complete |
+| submit_quiz.php | Submit quiz answers |
+
+**Q10. How does enrollment work?**
+A:
+- Student views course on homepage
+- If not enrolled, shows "Enroll" button
+- Button submits form to `enroll.php` with course_id
+- Backend inserts record into `enrollments` table (user_id, course_id)
+- Button changes to "✔ Enrolled"
+- Student can now access course content
+
+---
+
+### **Frontend & User Interface**
+
+**Q11. What are the main frontend pages in this LMS?**
+A:
+- `login.html` - User authentication
+- `register.html` - Account creation
+- `index.php` - Homepage with course listings
+- `course.php` - Individual course details and lessons
+- `lesson.php` - Display lesson content and video
+- `quiz.php` - Quiz interface
+- Dashboard pages (student/, instructor/, admin/)
+- Partial templates (header, footer, layout)
+
+**Q12. How does the home page display courses?**
+A:
+- `index.php` queries all courses from database
+- Counts total courses, lessons, quizzes
+- For each course, checks if logged-in user is enrolled
+- Displays course cards with title, description, thumbnail
+- Shows "Enroll" button (not enrolled) or "✔ Enrolled" status (enrolled)
+- Role-based nav links (Login/Register/Dashboard/Logout)
+
+**Q13. Explain the search functionality.**
+A: The search is implemented in JavaScript (app.js) with:
+- Search input targeting `.course-card` elements
+- Searches within `h3` (title) and `p` (description) tags
+- Real-time filtering based on user input
+- Client-side implementation for instant results
+
+**Q14. What information is shown in course cards?**
+A:
+- Course thumbnail image
+- Course title
+- Course description (first 100 characters)
+- "Featured" or "Course" label badge
+- Enrollment status or action button
+- Link to course details page
+
+---
+
+### **Security & Best Practices**
+
+**Q15. What are the security vulnerabilities in this project?**
+A:
+1. **SQL Injection:** Direct string interpolation in queries (`$email` directly in SQL)
+2. **No Input Validation:** User inputs not sanitized
+3. **No CSRF Protection:** Forms lack CSRF tokens
+4. **Session Security:** No HTTPS enforcement or secure session flags
+5. **Error Handling:** Generic error messages could leak database info
+- **Fixes:** Use prepared statements, validate/sanitize inputs, CSRF tokens, HTTPS, proper error logging
+
+**Q16. Why is password hashing important?**
+A: 
+- If database is breached, plain passwords would be exposed
+- `password_hash()` uses bcrypt with salt
+- Even if hashed password is stolen, original password cannot be recovered
+- `password_verify()` safely compares input password to hash
+
+**Q17. What is the purpose of session variables?**
+A: Session variables track logged-in user across page requests:
+- `$_SESSION['user_id']` - Unique user identifier
+- `$_SESSION['role']` - User role (student/instructor/admin)
+- `$_SESSION['name']` - Display name
+- Persist until logout or session timeout
+
+**Q18. How would you improve security?**
+A:
+1. Use **prepared statements** to prevent SQL injection
+2. **Validate & sanitize** all user inputs
+3. Implement **CSRF tokens** in forms
+4. Use **HTTPS** for encrypted communication
+5. Implement **rate limiting** on login attempts
+6. Add **input length restrictions**
+7. Use **Content Security Policy** headers
+8. Implement **account lockout** after failed attempts
+9. Add **logging and monitoring** for suspicious activities
+10. Regular **security audits** and updates
+
+---
+
+### **Development & Deployment**
+
+**Q19. How do you set up this project locally?**
+A:
+1. Install XAMPP (Apache + MySQL + PHP)
+2. Start Apache and MySQL from XAMPP Control Panel
+3. Clone/copy project to `C:\xampp\htdocs\lms`
+4. Create database `lms_db` via phpMyAdmin
+5. Run provided SQL statements to create tables
+6. Navigate to `http://localhost/lms/frontend/login.html`
+
+**Q20. What are the key files to modify for customization?**
+A:
+- `backend/db.php` - Database credentials
+- `frontend/assets/styles.css` - UI styling
+- `frontend/assets/js/app.js` - Frontend interactions
+- `frontend/partials/layout_start.php` - Header/layout template
+- Backend PHP files - Business logic modification
+
+**Q21. How is data flow in a typical user journey?**
+A: Registration → Login → View Courses → Enroll → View Lessons → Complete Lessons → Take Quiz → Submit Quiz → Track Progress
+
+**Q22. What improvements would you suggest?**
+A:
+1. **API-based architecture** (REST/GraphQL) separating frontend/backend
+2. **Caching layer** (Redis) for frequently accessed data
+3. **Notification system** (emails for course updates, quiz results)
+4. **Payment gateway** for paid courses
+5. **Video streaming** service integration
+6. **Mobile app** support
+7. **Real-time notifications** using WebSockets
+8. **Analytics dashboard** for instructors
+9. **Discussion forums** per course
+10. **Certificate generation** upon completion
+
+---
+
+### **Practical Scenarios**
+
+**Q23. How would you add a feature for instructors to see all their students?**
+A:
+- Query courses table filtered by `instructor_id = $_SESSION['user_id']`
+- For each course, query enrollments and join with users table
+- Display student list with enrollment dates
+- Add sorting/filtering options
+
+**Q24. How would you implement course ratings?**
+A:
+- Add `ratings` table with: id, user_id, course_id, rating (1-5), comment, created_at
+- Add form on course page for students to rate
+- Calculate average rating: `SELECT AVG(rating) FROM ratings WHERE course_id=X`
+- Display rating on course cards
+
+**Q25. What happens if a student tries to access someone else's enrolled course?**
+A: Currently, there's no access control checking student ID. This is a vulnerability:
+- **Fix:** In `lesson.php` and `course.php`, verify student's enrollment before displaying content
+- Query: `SELECT * FROM enrollments WHERE user_id = $SESSION_ID AND course_id = $course_id`
+- If no result, deny access
+
+---
+
+This documentation provides comprehensive coverage of the LMS project architecture, implementation, security considerations, and typical viva questions with detailed answers. Good luck with your viva! 🎓

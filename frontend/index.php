@@ -4,69 +4,133 @@ session_start();
 
 $sql = "SELECT * FROM courses";
 $result = $conn->query($sql);
+$courses = [];
+while ($courseRow = $result->fetch_assoc()) {
+    $courses[] = $courseRow;
+}
+$totalCourses = count($courses);
+$lessonCountResult = $conn->query("SELECT COUNT(*) AS total FROM lessons");
+$quizCountResult = $conn->query("SELECT COUNT(*) AS total FROM quizzes");
+$totalLessons = $lessonCountResult ? (int) $lessonCountResult->fetch_assoc()['total'] : 0;
+$totalQuizzes = $quizCountResult ? (int) $quizCountResult->fetch_assoc()['total'] : 0;
+
+$pageTitle = 'LMS Home';
+$cssPath = 'assets/styles.css';
+$scriptPath = 'assets/js/app.js';
+$brandHref = 'index.php';
+$showSearch = true;
+$searchPlaceholder = 'Search courses...';
+$searchTarget = '.course-card';
+$searchFields = 'h3,p';
+$navLinks = [];
+if (isset($_SESSION['user_id'])) {
+    if ($_SESSION['role'] === 'student') {
+        $navLinks[] = ['href' => 'student/dashboard.php', 'label' => 'Dashboard'];
+    } elseif ($_SESSION['role'] === 'instructor') {
+        $navLinks[] = ['href' => 'instructor/dashboard.php', 'label' => 'Dashboard'];
+    } elseif ($_SESSION['role'] === 'admin') {
+        $navLinks[] = ['href' => 'admin/dashboard.php', 'label' => 'Dashboard'];
+    }
+    $navLinks[] = ['href' => '../backend/logout.php', 'label' => 'Logout', 'class' => 'btn btn-secondary'];
+} else {
+    $navLinks[] = ['href' => 'login.html', 'label' => 'Login'];
+    $navLinks[] = ['href' => 'register.html', 'label' => 'Register', 'class' => 'btn'];
+}
+
+include 'partials/layout_start.php';
+include 'partials/header.php';
 ?>
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>LMS Home</title>
+<section class="hero-panel hero-layout">
+  <div>
+    <div class="label-pill">Discover</div>
+    <h1>Find the right course for your next milestone</h1>
+    <p class="subheading">Browse high-quality learning paths for students, instructors, and administrators with lessons, quizzes, and progress tracking.</p>
+    <div class="hero-actions">
+      <a class="btn" href="#courses">Browse Courses</a>
+      <a class="btn btn-secondary" href="login.html">Login</a>
+    </div>
+  </div>
+  <div class="hero-media">
+    <img src="assets/images/hero-learning.jpg" alt="Keep learning hero image">
+  </div>
+</section>
 
-    <style>
-        body {
-            font-family: Arial;
-            padding: 20px;
-        }
+<section class="stats-grid">
+  <article class="stat-card">
+    <div class="stat-value"><?php echo $totalCourses; ?></div>
+    <div class="stat-label">Published Courses</div>
+  </article>
+  <article class="stat-card">
+    <div class="stat-value"><?php echo $totalLessons; ?></div>
+    <div class="stat-label">Learning Lessons</div>
+  </article>
+  <article class="stat-card">
+    <div class="stat-value"><?php echo $totalQuizzes; ?></div>
+    <div class="stat-label">Practice Quizzes</div>
+  </article>
+</section>
 
-        .course-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
+<section class="feature-grid">
+  <article class="feature-card">
+    <h3>Fast Course Access</h3>
+    <p>Jump directly into any enrolled course in one click.</p>
+    <div class="feature-actions">
+      <a class="mini-btn" href="#courses">Explore</a>
+      <a class="mini-btn" href="login.html">Sign In</a>
+    </div>
+  </article>
+  <article class="feature-card">
+    <h3>Instructor Workspace</h3>
+    <p>Create lessons and quizzes from a clean dashboard flow.</p>
+    <div class="feature-actions">
+      <a class="mini-btn" href="register.html">Start Teaching</a>
+    </div>
+  </article>
+  <article class="feature-card">
+    <h3>Progress Tracking</h3>
+    <p>Track completion status and continue where you left off.</p>
+    <div class="feature-actions">
+      <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'student') { ?>
+        <a class="mini-btn" href="student/dashboard.php">My Progress</a>
+      <?php } elseif (isset($_SESSION['user_id']) && $_SESSION['role'] === 'instructor') { ?>
+        <a class="mini-btn" href="instructor/dashboard.php">My Workspace</a>
+      <?php } elseif (isset($_SESSION['user_id']) && $_SESSION['role'] === 'admin') { ?>
+        <a class="mini-btn" href="admin/dashboard.php">Admin Panel</a>
+      <?php } else { ?>
+        <a class="mini-btn" href="login.html">Get Started</a>
+      <?php } ?>
+    </div>
+  </article>
+</section>
 
-        .course-card {
-            width: 250px;
-            border: 1px solid #ccc;
-            padding: 10px;
-            border-radius: 10px;
-            transition: 0.2s;
-        }
+<?php if ($totalCourses > 0) { ?>
+<section class="slider-shell">
+  <div class="slider-header">
+    <h3 class="section-heading">Featured Tracks</h3>
+    <div class="slider-nav">
+      <a href="#featuredSlider">Start</a>
+      <a href="#courses">All</a>
+    </div>
+  </div>
+  <div class="slider-track" id="featuredSlider">
+    <?php foreach ($courses as $featured) { ?>
+      <article class="slider-card">
+        <span class="label-pill">Featured</span>
+        <h4><?php echo htmlspecialchars($featured['title']); ?></h4>
+        <p><?php echo htmlspecialchars(substr($featured['description'], 0, 130)); ?>...</p>
+        <a class="mini-btn" href="course.php?id=<?php echo $featured['id']; ?>">Open Course</a>
+      </article>
+    <?php } ?>
+  </div>
+</section>
+<?php } ?>
 
-        .course-card:hover {
-            box-shadow: 0 0 10px rgba(0,0,0,0.2);
-        }
-
-        .course-card img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-        }
-
-        a {
-            text-decoration: none;
-            color: black;
-        }
-
-        .enrolled {
-            color: green;
-            font-weight: bold;
-        }
-
-        .btn {
-            margin-top: 8px;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-    </style>
-</head>
-<body>
-
-<h2>All Courses</h2>
-
-<div class="course-container">
+<div id="courses" class="course-container">
 
 <?php
-if ($result->num_rows > 0) {
-    while($row = $result->fetch_assoc()) {
+if ($totalCourses > 0) {
+    foreach($courses as $row) {
 
         $user_id = $_SESSION['user_id'] ?? 0;
         $is_enrolled = false;
@@ -81,38 +145,37 @@ if ($result->num_rows > 0) {
 ?>
 
 <div class="course-card">
-
-    <!-- Clickable content -->
-    <a href="course.php?id=<?php echo $row['id']; ?>">
-        <img src="../uploads/<?php echo $row['thumbnail']; ?>">
-        <h3><?php echo $row['title']; ?></h3>
-        <p><?php echo substr($row['description'], 0, 100); ?>...</p>
+    <a class="card-link" href="course.php?id=<?php echo $row['id']; ?>">
+        <div class="course-card-content">
+            <span class="label-pill">Course</span>
+            <h3><?php echo $row['title']; ?></h3>
+            <p><?php echo substr($row['description'], 0, 100); ?>...</p>
+        </div>
     </a>
 
-    <!-- Student actions -->
-    <?php if (isset($_SESSION['role']) && $_SESSION['role'] == 'student') { ?>
-
-        <?php if ($is_enrolled) { ?>
-            <p class="enrolled">✔ Enrolled</p>
+    <div class="course-card-footer">
+        <?php if (isset($_SESSION['role']) && $_SESSION['role'] == 'student') { ?>
+            <?php if ($is_enrolled) { ?>
+                <span class="status-pill success">✔ Enrolled</span>
+            <?php } else { ?>
+                <form action="../backend/enroll.php" method="POST">
+                    <input type="hidden" name="course_id" value="<?php echo $row['id']; ?>">
+                    <button class="btn" type="submit">Enroll</button>
+                </form>
+            <?php } ?>
         <?php } else { ?>
-            <form action="../backend/enroll.php" method="POST">
-                <input type="hidden" name="course_id" value="<?php echo $row['id']; ?>">
-                <button class="btn" type="submit">Enroll</button>
-            </form>
+            <span class="status-pill">View course details</span>
         <?php } ?>
-
-    <?php } ?>
-
+    </div>
 </div>
 
 <?php
     }
 } else {
-    echo "No courses found";
+    echo "<p class=\"empty-note\">No courses found yet.</p>";
 }
 ?>
 
 </div>
 
-</body>
-</html>
+<?php include 'partials/layout_end.php'; ?>

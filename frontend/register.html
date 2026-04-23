@@ -1,24 +1,65 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
+    <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
+<div class="page-shell">
+<div class="container">
+<header class="app-header">
+  <div class="header-inner">
+    <a class="app-brand" href="index.php">LMS Portal</a>
+    <button class="mobile-menu-toggle" type="button" aria-label="Toggle navigation" onclick="toggleMobileMenu()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <nav class="app-nav" id="mobileNav">
+      <a href="index.php">Courses</a>
+      <a href="login.html" class="btn">Login</a>
+    </nav>
+  </div>
+</header>
 
-<h2>Register</h2>
+<section class="auth-shell">
+  <div class="auth-panel">
+    <h2>Create Your Account</h2>
+    <p class="subheading">Choose your role and start building or learning with a modern LMS experience.</p>
 
-<form action="../backend/register.php" method="POST">
-    <input type="text" name="name" placeholder="Name" required><br><br>
-    <input type="email" name="email" placeholder="Email" required><br><br>
-    <input type="password" name="password" placeholder="Password" required><br><br>
+    <form action="../backend/register.php" method="POST">
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input id="name" type="text" name="name" placeholder="Enter your full name" required>
+      </div>
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input id="email" type="email" name="email" placeholder="Enter your email" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input id="password" type="password" name="password" placeholder="Create a strong password" required>
+      </div>
+      <div class="form-group">
+        <label for="role">I want to</label>
+        <select id="role" name="role">
+          <option value="student">Learn as a Student</option>
+          <option value="instructor">Teach as an Instructor</option>
+        </select>
+      </div>
+      <div class="form-actions">
+        <button class="btn" type="submit">Create Account</button>
+      </div>
+    </form>
 
-    <select name="role">
-        <option value="student">Student</option>
-        <option value="instructor">Instructor</option>
-    </select><br><br>
+    <p class="form-note">Already registered? <a href="login.html">Login here</a></p>
+  </div>
+</section>
+</div>
+</div>
 
-    <button type="submit">Register</button>
-</form>
-
+<script src="assets/js/app.js"></script>
 </body>
 </html>

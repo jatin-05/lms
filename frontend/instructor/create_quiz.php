@@ -6,7 +6,11 @@ if ($_SESSION['role'] != 'instructor') {
     die("Access denied");
 }
 
-$course_id = $_GET['course_id'];
+$course_id = isset($_GET['course_id']) ? intval($_GET['course_id']) : 0;
+
+if ($course_id === 0) {
+    die("Error: Course ID is required");
+}
 
 // Check if quiz exists
 $check = "SELECT * FROM quizzes WHERE course_id='$course_id'";
@@ -27,39 +31,25 @@ if ($res->num_rows > 0) {
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Quiz</title>
-
-    <style>
-        body { font-family: Arial; padding: 20px; }
-
-        .box {
-            border: 1px solid #ccc;
-            padding: 15px;
-            margin-top: 15px;
-            border-radius: 8px;
-        }
-
-        input, textarea, select {
-            display: block;
-            margin-bottom: 10px;
-            width: 300px;
-        }
-
-        .question {
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .delete-btn {
-            color: red;
-            text-decoration: none;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Management</title>
+    <link rel="stylesheet" href="../assets/styles.css">
 </head>
 <body>
-
-<h2>Quiz Management</h2>
+<header class="app-header">
+  <div class="header-inner">
+    <div class="app-brand">Quiz Management</div>
+    <nav class="app-nav">
+      <a href="dashboard.php">Dashboard</a>
+      <a href="../../backend/logout.php">Logout</a>
+    </nav>
+  </div>
+</header>
+<div class="page-shell">
+<div class="container">
+<section class="form-card">
+  <h2 class="page-title">Quiz Management</h2>
 
 <?php if ($quiz) { ?>
 
@@ -82,7 +72,7 @@ if ($res->num_rows > 0) {
                     C: <?php echo $q['option_c']; ?><br>
                     D: <?php echo $q['option_d']; ?><br>
 
-                    <span style="color:green;">
+                    <span class="status-message success">
                         ✔ Correct: <?php echo strtoupper($q['correct_option']); ?>
                     </span><br>
 
@@ -123,7 +113,7 @@ if ($res->num_rows > 0) {
                 <option value="d">D</option>
             </select>
 
-            <button type="submit">Add Question</button>
+            <button class="btn" type="submit">Add Question</button>
         </form>
     </div>
 
@@ -138,7 +128,7 @@ if ($res->num_rows > 0) {
             
             <input type="text" name="title" placeholder="Quiz Title" required>
             
-            <button type="submit">Create Quiz</button>
+            <button class="btn" type="submit">Create Quiz</button>
         </form>
     </div>
 
@@ -147,5 +137,8 @@ if ($res->num_rows > 0) {
 <br>
 <a href="dashboard.php">← Back to Dashboard</a>
 
+</section>
+</div>
+</div>
 </body>
 </html>

@@ -6,28 +6,55 @@ $quiz_id = $_GET['id'];
 
 $sql = "SELECT * FROM questions WHERE quiz_id='$quiz_id'";
 $result = $conn->query($sql);
+
+$pageTitle = 'Quiz';
+$cssPath = 'assets/styles.css';
+$scriptPath = 'assets/js/app.js';
+$brandHref = 'index.php';
+$showSearch = false;
+$navLinks = [
+    ['href' => 'index.php', 'label' => 'Courses']
+];
+if (isset($_SESSION['user_id'])) {
+    $navLinks[] = ['href' => '../backend/logout.php', 'label' => 'Logout', 'class' => 'btn btn-secondary'];
+} else {
+    $navLinks[] = ['href' => 'login.html', 'label' => 'Login', 'class' => 'btn'];
+}
+include 'partials/layout_start.php';
+include 'partials/header.php';
 ?>
 
-<h2>Quiz</h2>
-
-<form action="../backend/submit_quiz.php" method="POST">
-
-<input type="hidden" name="quiz_id" value="<?php echo $quiz_id; ?>">
+<section class="form-card">
+  <h2 class="page-title">Quiz</h2>
+  <form action="../backend/submit_quiz.php" method="POST">
+    <input type="hidden" name="quiz_id" value="<?php echo $quiz_id; ?>">
 
 <?php
 $i = 1;
 while($row = $result->fetch_assoc()) {
 ?>
-
-<p><?php echo $i++ . ". " . $row['question']; ?></p>
-
-<input type="radio" name="q<?php echo $row['id']; ?>" value="a"> <?php echo $row['option_a']; ?><br>
-<input type="radio" name="q<?php echo $row['id']; ?>" value="b"> <?php echo $row['option_b']; ?><br>
-<input type="radio" name="q<?php echo $row['id']; ?>" value="c"> <?php echo $row['option_c']; ?><br>
-<input type="radio" name="q<?php echo $row['id']; ?>" value="d"> <?php echo $row['option_d']; ?><br><br>
-
+<fieldset class="question-group">
+  <legend><?php echo $i++ . ". " . $row['question']; ?></legend>
+  <label class="quiz-option">
+    <input type="radio" name="q<?php echo $row['id']; ?>" value="a" required>
+    <span><?php echo $row['option_a']; ?></span>
+  </label>
+  <label class="quiz-option">
+    <input type="radio" name="q<?php echo $row['id']; ?>" value="b">
+    <span><?php echo $row['option_b']; ?></span>
+  </label>
+  <label class="quiz-option">
+    <input type="radio" name="q<?php echo $row['id']; ?>" value="c">
+    <span><?php echo $row['option_c']; ?></span>
+  </label>
+  <label class="quiz-option">
+    <input type="radio" name="q<?php echo $row['id']; ?>" value="d">
+    <span><?php echo $row['option_d']; ?></span>
+  </label>
+</fieldset>
 <?php } ?>
 
-<button type="submit">Submit Quiz</button>
-
-</form>
+    <button class="btn" type="submit">Submit Quiz</button>
+  </form>
+</section>
+<?php include 'partials/layout_end.php'; ?>
